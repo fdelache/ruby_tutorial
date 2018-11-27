@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+require 'open-uri'
+require 'nokogiri'
+require 'openssl'
+
+# Returns the paragraph from a Wikipedia link, stripped of reference numbers.
+# Especially useful for text-to-speech (both native and foreign)
+
+if ARGV.length == 0
+  puts "Usage: wikp [URL]"
+  exit(1)
+end
+
+url = ARGV.shift
+doc = Nokogiri::HTML(open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read)
+doc.css('.reference').each(&:remove)
+puts doc.css('p').map(&:content).join("\n")
